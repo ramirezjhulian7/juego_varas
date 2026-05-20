@@ -21,15 +21,18 @@ const STICK_WIDTH = 32
 const STICK_HEIGHT = 200
 const HAND_HIT_RADIUS = 28
 
-// Tuned for "stand mode": target ~40s for an average player with 3 lives.
+// Tuned for "stand mode": fast and challenging, target ~30–40s rounds.
 // Spawn cadence accelerates and sticks fall faster every LEVEL_INTERVAL_MS.
-const BASE_SPAWN_INTERVAL = 850
-const MIN_SPAWN_INTERVAL = 280
-const SPAWN_INTERVAL_PER_LEVEL = 90
-const BASE_SPEED = 340
-const SPEED_PER_LEVEL = 60
-const LEVEL_INTERVAL_MS = 7000
-const MAX_LEVEL = 12
+// Speed is expressed as fractions of the screen height per second so the
+// game feels equally challenging on landscape and vertical (portrait) panels.
+const BASE_SPAWN_INTERVAL = 700
+const MIN_SPAWN_INTERVAL = 220
+const SPAWN_INTERVAL_PER_LEVEL = 95
+const BASE_SPEED_FRAC = 0.7 // screen heights per second at level 1
+const SPEED_FRAC_PER_LEVEL = 0.13
+const MAX_SPEED_FRAC = 1.8
+const LEVEL_INTERVAL_MS = 5500
+const MAX_LEVEL = 14
 
 export class GameScene extends Phaser.Scene {
   private sticks: Stick[] = []
@@ -98,7 +101,8 @@ export class GameScene extends Phaser.Scene {
     const x = Phaser.Math.Between(margin, width - margin)
 
     const container = this.add.container(x, -STICK_HEIGHT) as Stick
-    container.speed = BASE_SPEED + (this.level - 1) * SPEED_PER_LEVEL
+    const frac = Math.min(MAX_SPEED_FRAC, BASE_SPEED_FRAC + (this.level - 1) * SPEED_FRAC_PER_LEVEL)
+    container.speed = frac * this.scale.height
     container.caught = false
 
     // Asimetrix brand palette
