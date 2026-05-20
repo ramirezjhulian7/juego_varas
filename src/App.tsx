@@ -11,6 +11,7 @@ import { MainMenu } from './components/MainMenu'
 import { PermissionGate } from './components/PermissionGate'
 import { PauseOverlay } from './components/PauseOverlay'
 import { GameOver } from './components/GameOver'
+import { HandCursor } from './components/HandCursor'
 import { playSound } from './lib/audio'
 
 function App() {
@@ -18,7 +19,10 @@ function App() {
   const setLevel = useGameStore((s) => s.setLevel)
   const loseLife = useGameStore((s) => s.loseLife)
 
-  const cameraEnabled = phase === 'permission' || phase === 'playing' || phase === 'paused'
+  // Stand mode: once the player accepts permission, we keep camera + tracker
+  // running for the rest of the session so transitions (gameover → next player)
+  // feel instant and GameOver buttons can be hit with hands.
+  const cameraEnabled = useGameStore((s) => s.cameraStarted)
   const camera = useCamera(cameraEnabled)
   const tracker = useHandTracker(camera.videoRef, cameraEnabled && camera.ready)
 
@@ -58,6 +62,10 @@ function App() {
     <div className="bg-arena bg-grid-overlay relative h-full w-full overflow-hidden">
       <CameraView videoRef={camera.videoRef} visible={phase === 'playing' || phase === 'paused'} />
 
+      {phase === 'gameover' && tracker.ready && (
+        <HandCursor landmarksRef={proxyRef} />
+      )}
+
       {phase === 'playing' && (
         <PhaserGame landmarksRef={proxyRef} callbacks={callbacks} active={true} />
       )}
@@ -65,8 +73,8 @@ function App() {
       {phase === 'playing' && <HUD />}
 
       {(phase === 'playing' || phase === 'paused') && (
-        <div className="pointer-events-auto fixed bottom-4 right-4 z-40 flex items-center gap-2 rounded-2xl border border-ax-border bg-ax-surface/85 px-3 py-2 shadow-card backdrop-blur-md">
-          <Logo className="block h-7" />
+        <div className="pointer-events-auto fixed bottom-4 right-4 z-40">
+          <Logo className="h-12" />
         </div>
       )}
 
@@ -82,7 +90,7 @@ function App() {
           />
         )}
         {phase === 'paused' && <PauseOverlay key="pause" />}
-        {phase === 'gameover' && <GameOver key="over" />}
+        {phase === 'gameover' && <GameOver key="over" landmarksRef={proxyRef} />}
       </AnimatePresence>
 
       <span className="pointer-events-none fixed bottom-2 left-1/2 z-50 -translate-x-1/2 text-[10px] font-medium uppercase tracking-[0.3em] text-ax-textDim">

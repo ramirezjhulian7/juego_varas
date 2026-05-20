@@ -18,10 +18,18 @@ type Stick = Phaser.GameObjects.Container & {
 }
 
 const STICK_WIDTH = 32
-const STICK_HEIGHT = 130
-const BASE_SPAWN_INTERVAL = 1100
-const BASE_SPEED = 220
+const STICK_HEIGHT = 200
 const HAND_HIT_RADIUS = 28
+
+// Tuned for "stand mode": target ~40s for an average player with 3 lives.
+// Spawn cadence accelerates and sticks fall faster every LEVEL_INTERVAL_MS.
+const BASE_SPAWN_INTERVAL = 850
+const MIN_SPAWN_INTERVAL = 280
+const SPAWN_INTERVAL_PER_LEVEL = 90
+const BASE_SPEED = 340
+const SPEED_PER_LEVEL = 60
+const LEVEL_INTERVAL_MS = 7000
+const MAX_LEVEL = 12
 
 export class GameScene extends Phaser.Scene {
   private sticks: Stick[] = []
@@ -65,13 +73,16 @@ export class GameScene extends Phaser.Scene {
     this.elapsed += delta
     this.spawnTimer += delta
 
-    const interval = Math.max(450, BASE_SPAWN_INTERVAL - (this.level - 1) * 70)
+    const interval = Math.max(
+      MIN_SPAWN_INTERVAL,
+      BASE_SPAWN_INTERVAL - (this.level - 1) * SPAWN_INTERVAL_PER_LEVEL,
+    )
     if (this.spawnTimer >= interval) {
       this.spawnStick()
       this.spawnTimer = 0
     }
 
-    const newLevel = Math.min(10, 1 + Math.floor(this.elapsed / 15000))
+    const newLevel = Math.min(MAX_LEVEL, 1 + Math.floor(this.elapsed / LEVEL_INTERVAL_MS))
     if (newLevel !== this.level) {
       this.level = newLevel
       this.callbacks.onLevelUp(newLevel)
@@ -87,7 +98,7 @@ export class GameScene extends Phaser.Scene {
     const x = Phaser.Math.Between(margin, width - margin)
 
     const container = this.add.container(x, -STICK_HEIGHT) as Stick
-    container.speed = BASE_SPEED + (this.level - 1) * 35
+    container.speed = BASE_SPEED + (this.level - 1) * SPEED_PER_LEVEL
     container.caught = false
 
     // Asimetrix brand palette

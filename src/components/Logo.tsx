@@ -28,8 +28,8 @@ export function Logo({ className, variant = 'full' }: Props) {
       href="https://asimetrix.co"
       target="_blank"
       rel="noopener noreferrer"
-      className={className}
       aria-label="Asimetrix"
+      className={`inline-flex items-center justify-center rounded-2xl bg-ax-primary px-4 py-2.5 shadow-card ring-1 ring-white/10 ${className ?? ''}`}
     >
       <img
         src="https://asimetrix.co/hs-fs/hubfs/logo-AX-Asimetrix-unlocking-the-power-of-data.webp?width=460&height=132&name=logo-AX-Asimetrix-unlocking-the-power-of-data.webp"
@@ -38,7 +38,7 @@ export function Logo({ className, variant = 'full' }: Props) {
         height={132}
         loading="lazy"
         decoding="async"
-        className="h-full w-auto object-contain invert"
+        className="h-full w-auto object-contain"
       />
     </a>
   )

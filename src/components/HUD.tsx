@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { useGameStore } from '../store/gameStore'
+import { formatRoundTime, useGameStore } from '../store/gameStore'
+import { useRoundTimer } from '../hooks/useRoundTimer'
 import { HeartIcon, PauseIcon, SoundOffIcon, SoundOnIcon } from './icons'
 import { Logo } from './Logo'
 
@@ -11,9 +12,10 @@ export function HUD() {
   const soundEnabled = useGameStore((s) => s.soundEnabled)
   const toggleSound = useGameStore((s) => s.toggleSound)
   const setPhase = useGameStore((s) => s.setPhase)
+  const roundMs = useRoundTimer()
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between p-3 sm:p-5">
+    <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-3 p-3 sm:p-5">
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -42,6 +44,23 @@ export function HUD() {
           <span>Nivel {level}</span>
           <span className="text-ax-textDim/50">·</span>
           <span>Récord {highScore}</span>
+          <span className="text-ax-textDim/50 sm:hidden">·</span>
+          <span className="tabular-nums sm:hidden">{formatRoundTime(roundMs)}</span>
+        </div>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.05 }}
+        className="surface-1 pointer-events-auto hidden rounded-2xl px-5 py-3 text-center sm:block"
+        aria-label="Tiempo de la ronda"
+      >
+        <div className="font-display text-[10px] font-medium uppercase tracking-[0.28em] text-ax-textMuted">
+          Tiempo
+        </div>
+        <div className="font-display text-3xl font-bold leading-none tabular-nums text-ax-text sm:text-4xl">
+          {formatRoundTime(roundMs)}
         </div>
       </motion.div>
 

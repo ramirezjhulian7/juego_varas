@@ -17,7 +17,7 @@ export function MainMenu() {
     >
       <BackgroundDecor />
 
-      <Logo className="mb-6 inline-block h-12" />
+      <Logo className="mb-7 h-16" />
 
       <motion.section
         initial={{ scale: 0.96, opacity: 0, y: 12 }}
