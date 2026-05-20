@@ -38,7 +38,7 @@ export function Logo({ className, variant = 'full' }: Props) {
         height={132}
         loading="lazy"
         decoding="async"
-        className="h-full w-auto object-contain"
+        className="h-full w-auto object-contain invert"
       />
     </a>
   )

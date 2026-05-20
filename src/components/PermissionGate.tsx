@@ -23,7 +23,7 @@ export function PermissionGate({ cameraReady, trackerReady, cameraError, tracker
       transition={{ duration: 0.2 }}
       className="absolute inset-0 z-30 flex flex-col items-center justify-center px-6"
     >
-      <Logo className="mb-6 inline-block h-8" />
+      <Logo className="mb-6 inline-block h-11" />
 
       <div
         className="surface-1 w-full max-w-md rounded-3xl p-8 text-center"
