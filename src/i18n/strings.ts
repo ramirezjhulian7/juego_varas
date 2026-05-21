@@ -9,6 +9,11 @@ export const STRINGS = {
     es: 'Atrapa la tocineta y las salchichas que caen moviendo tus manos frente a la cámara. Participa por premios.',
     en: 'Catch the bacon and sausages that fall by moving your hands in front of the camera. Play to win prizes.',
   },
+  menuLeadHighlight: { es: 'Atrapa', en: 'Catch' },
+  menuLeadRest: {
+    es: ' la tocineta y las salchichas que caen moviendo tus manos frente a la cámara. Participa por premios.',
+    en: ' the bacon and sausages that fall by moving your hands in front of the camera. Play to win prizes.',
+  },
   tipMove: { es: 'Mueve tus manos', en: 'Move your hands' },
   tipFast: { es: 'Reflejos rápidos', en: 'Fast reflexes' },
   tipRecord: { es: 'Récord', en: 'Best' },

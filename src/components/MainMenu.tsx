@@ -1,13 +1,12 @@
 import { motion } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
 import { useT } from '../i18n/useT'
-import { BoltIcon, HandIcon, PlayIcon, TrophyIcon } from './icons'
+import { PlayIcon } from './icons'
 import { LanguageToggle } from './LanguageToggle'
 import { Logo } from './Logo'
 
 export function MainMenu() {
   const setPhase = useGameStore((s) => s.setPhase)
-  const highScore = useGameStore((s) => s.highScore)
   const t = useT()
 
   return (
@@ -30,33 +29,23 @@ export function MainMenu() {
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="surface-1 relative w-full max-w-md rounded-3xl p-8 text-center sm:p-10"
       >
-        <span className="pill mb-5 text-ax-secondary">
+        <span className="pill mb-6 text-ax-secondary">
           <span className="h-1.5 w-1.5 rounded-full bg-ax-electric shadow-[0_0_8px_rgba(75,162,255,0.7)]" />
           {t('menuPill')}
         </span>
 
-        <h1 className="font-display text-5xl font-bold leading-[1.05] tracking-tight text-ax-text sm:text-6xl">
-          {t('menuTitleA')}
-          <br />
-          <span className="bg-gradient-to-r from-ax-primary via-ax-secondary to-ax-electric bg-clip-text text-transparent">
-            {t('menuTitleB')}
+        <p className="font-display text-3xl font-bold leading-[1.15] tracking-tight text-ax-text sm:text-4xl">
+          <span className="block font-display text-6xl font-extrabold tracking-tight bg-gradient-to-r from-ax-primary via-ax-secondary to-ax-electric bg-clip-text text-transparent sm:text-7xl">
+            {t('menuLeadHighlight')}
           </span>
-        </h1>
-
-        <p className="mt-5 text-base leading-relaxed text-ax-textMuted">{t('menuLead')}</p>
-
-        <div className="mt-7 grid grid-cols-3 gap-3">
-          <Tip icon={<HandIcon className="h-5 w-5 text-ax-secondary" />} label={t('tipMove')} />
-          <Tip icon={<BoltIcon className="h-5 w-5 text-ax-electric" />} label={t('tipFast')} />
-          <Tip
-            icon={<TrophyIcon className="h-5 w-5 text-ax-primary" />}
-            label={`${t('tipRecord')} ${highScore}`}
-          />
-        </div>
+          <span className="mt-3 block text-2xl font-semibold leading-[1.2] text-ax-textMuted sm:text-3xl">
+            {t('menuLeadRest').trim()}
+          </span>
+        </p>
 
         <button
           onClick={() => setPhase('permission')}
-          className="btn-primary mt-8 w-full rounded-2xl py-4 text-[15px]"
+          className="btn-primary mt-10 w-full rounded-2xl py-5 text-base"
         >
           <PlayIcon className="mr-2 h-4 w-4 text-white" />
           {t('startCta')}
@@ -69,15 +58,6 @@ export function MainMenu() {
 
       <p className="mt-6 text-center text-xs text-ax-textDim">{t('poweredBy')}</p>
     </motion.div>
-  )
-}
-
-function Tip({ icon, label }: { icon: React.ReactNode; label: string }) {
-  return (
-    <div className="stat-card text-left">
-      <div className="mb-1.5">{icon}</div>
-      <div className="text-xs leading-tight text-ax-textMuted">{label}</div>
-    </div>
   )
 }
 
