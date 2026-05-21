@@ -66,7 +66,7 @@ export function PermissionGate({ cameraReady, trackerReady, cameraError, tracker
             </div>
             <h2 className="font-display text-2xl font-bold text-ax-text">¡Todo listo!</h2>
             <p className="mt-3 text-sm text-ax-textMuted">
-              Posiciona tus manos frente a la cámara y atrapa los cerditos que caen.
+              Posiciona tus manos frente a la cámara y atrapa la tocineta y las salchichas que caen.
             </p>
             <button
               onClick={() => resetRun()}

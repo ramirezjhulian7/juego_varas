@@ -39,7 +39,7 @@ export function MainMenu() {
         </h1>
 
         <p className="mt-5 text-base leading-relaxed text-ax-textMuted">
-          Atrapa los cerditos que caen moviendo tus manos frente a la cámara.
+          Atrapa la tocineta y las salchichas que caen moviendo tus manos frente a la cámara.
           Detección en tiempo real, sin instalación.
         </p>
 
