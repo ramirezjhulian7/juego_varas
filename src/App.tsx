@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion'
 import { useGameStore } from './store/gameStore'
 import { useCamera } from './hooks/useCamera'
 import { useHandTracker, type HandPoint } from './hooks/useHandTracker'
+import { useT } from './i18n/useT'
 import { CameraView } from './components/CameraView'
 import { PhaserGame } from './components/PhaserGame'
 import { HUD } from './components/HUD'
@@ -18,6 +19,7 @@ function App() {
   const phase = useGameStore((s) => s.phase)
   const setLevel = useGameStore((s) => s.setLevel)
   const loseLife = useGameStore((s) => s.loseLife)
+  const t = useT()
 
   // Stand mode: once the player accepts permission, we keep camera + tracker
   // running for the rest of the session so transitions (gameover → next player)
@@ -94,7 +96,7 @@ function App() {
       </AnimatePresence>
 
       <span className="pointer-events-none fixed bottom-2 left-1/2 z-50 -translate-x-1/2 text-[10px] font-medium uppercase tracking-[0.3em] text-ax-textDim">
-        privacidad · la cámara nunca sale del navegador
+        {t('privacy')}
       </span>
     </div>
   )

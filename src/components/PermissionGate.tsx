@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
+import { useT } from '../i18n/useT'
 import { AlertIcon, CheckIcon, HomeIcon, PlayIcon } from './icons'
 import { Logo } from './Logo'
 
@@ -13,6 +14,7 @@ type Props = {
 export function PermissionGate({ cameraReady, trackerReady, cameraError, trackerError }: Props) {
   const setPhase = useGameStore((s) => s.setPhase)
   const resetRun = useGameStore((s) => s.resetRun)
+  const t = useT()
   const error = cameraError || trackerError
   const ready = cameraReady && trackerReady
 
@@ -33,10 +35,10 @@ export function PermissionGate({ cameraReady, trackerReady, cameraError, tracker
         {!error && !ready && (
           <>
             <Spinner />
-            <h2 className="font-display mt-6 text-2xl font-bold text-ax-text">Preparando arena</h2>
+            <h2 className="font-display mt-6 text-2xl font-bold text-ax-text">{t('permPreparing')}</h2>
             <p className="mt-3 text-sm text-ax-textMuted">
-              {!cameraReady ? 'Acepta el permiso de cámara en tu navegador.' : null}
-              {cameraReady && !trackerReady ? 'Cargando modelo de IA (~10 MB la primera vez).' : null}
+              {!cameraReady ? t('permAcceptCam') : null}
+              {cameraReady && !trackerReady ? t('permLoadingModel') : null}
             </p>
             <ProgressTrack stage={cameraReady ? 1 : 0} />
           </>
@@ -47,14 +49,14 @@ export function PermissionGate({ cameraReady, trackerReady, cameraError, tracker
             <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-ax-error ring-1 ring-ax-error/30">
               <AlertIcon className="h-6 w-6" />
             </div>
-            <h2 className="font-display text-2xl font-bold text-ax-text">Algo salió mal</h2>
+            <h2 className="font-display text-2xl font-bold text-ax-text">{t('permError')}</h2>
             <p className="mt-3 text-sm text-ax-textMuted">{error}</p>
             <button
               onClick={() => setPhase('menu')}
               className="btn-ghost mt-6 w-full rounded-2xl py-3 text-sm"
             >
               <HomeIcon className="mr-2 h-4 w-4" />
-              Volver al menú
+              {t('permBackToMenu')}
             </button>
           </>
         )}
@@ -64,16 +66,14 @@ export function PermissionGate({ cameraReady, trackerReady, cameraError, tracker
             <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-ax-electric/10 text-ax-electric ring-1 ring-ax-electric/30">
               <CheckIcon className="h-6 w-6" />
             </div>
-            <h2 className="font-display text-2xl font-bold text-ax-text">¡Todo listo!</h2>
-            <p className="mt-3 text-sm text-ax-textMuted">
-              Posiciona tus manos frente a la cámara y atrapa la tocineta y las salchichas que caen.
-            </p>
+            <h2 className="font-display text-2xl font-bold text-ax-text">{t('permReady')}</h2>
+            <p className="mt-3 text-sm text-ax-textMuted">{t('permReadyBody')}</p>
             <button
               onClick={() => resetRun()}
               className="btn-primary mt-6 w-full rounded-2xl py-4 text-base"
             >
               <PlayIcon className="mr-2 h-4 w-4" />
-              ¡A jugar!
+              {t('permPlayCta')}
             </button>
           </>
         )}

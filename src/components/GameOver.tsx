@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import { formatRoundTime, useGameStore } from '../store/gameStore'
+import { useT } from '../i18n/useT'
 import { HomeIcon, ReloadIcon, TrophyIcon } from './icons'
 import { Logo } from './Logo'
 import { useHandActivate } from '../hooks/useHandActivate'
@@ -16,6 +17,7 @@ export function GameOver({ landmarksRef }: Props) {
   const lastRoundMs = useGameStore((s) => s.lastRoundMs)
   const resetRun = useGameStore((s) => s.resetRun)
   const setPhase = useGameStore((s) => s.setPhase)
+  const t = useT()
   const isNewRecord = score > 0 && score >= highScore
 
   const replayRef = useRef<HTMLButtonElement>(null)
@@ -32,7 +34,7 @@ export function GameOver({ landmarksRef }: Props) {
       className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-ax-primary/45 px-6 backdrop-blur-md"
       role="dialog"
       aria-modal="true"
-      aria-label="Juego terminado"
+      aria-label={t('gameOverPillEnd')}
     >
       <Logo className="mb-6 h-14" />
 
@@ -45,20 +47,20 @@ export function GameOver({ landmarksRef }: Props) {
         {isNewRecord ? (
           <span className="pill text-ax-electric">
             <TrophyIcon className="h-3.5 w-3.5 text-ax-electric" />
-            Nuevo récord
+            {t('gameOverPillRecord')}
           </span>
         ) : (
-          <span className="pill text-ax-textMuted">Fin de la partida</span>
+          <span className="pill text-ax-textMuted">{t('gameOverPillEnd')}</span>
         )}
 
         <h2 className="font-display mt-4 text-4xl font-bold text-ax-text">
-          {isNewRecord ? 'Imparable' : 'Buen intento'}
+          {isNewRecord ? t('gameOverTitleRecord') : t('gameOverTitleTry')}
         </h2>
 
         <div className="mt-7 grid grid-cols-3 gap-3">
-          <Stat label="Puntos" value={score} accent />
-          <Stat label="Tiempo" value={formatRoundTime(lastRoundMs)} />
-          <Stat label="Récord" value={highScore} />
+          <Stat label={t('statPoints')} value={score} accent />
+          <Stat label={t('statTime')} value={formatRoundTime(lastRoundMs)} />
+          <Stat label={t('statRecord')} value={highScore} />
         </div>
 
         <div className="mt-7 grid gap-3">
@@ -69,7 +71,7 @@ export function GameOver({ landmarksRef }: Props) {
             className="btn-primary rounded-2xl py-4 text-base"
           >
             <ReloadIcon className="mr-2 h-4 w-4" />
-            Jugar de nuevo
+            {t('gameOverPlayAgain')}
           </DwellButton>
           <DwellButton
             buttonRef={menuRef}
@@ -78,12 +80,12 @@ export function GameOver({ landmarksRef }: Props) {
             className="btn-ghost rounded-2xl py-3 text-sm"
           >
             <HomeIcon className="mr-2 h-4 w-4" />
-            Menú principal
+            {t('gameOverMainMenu')}
           </DwellButton>
         </div>
 
         <p className="mt-5 text-[11px] uppercase tracking-widest text-ax-textDim">
-          Pasa tu mano sobre un botón para activarlo
+          {t('gameOverHint')}
         </p>
       </motion.div>
     </motion.div>

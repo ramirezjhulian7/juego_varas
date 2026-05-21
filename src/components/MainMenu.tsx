@@ -1,11 +1,14 @@
 import { motion } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
+import { useT } from '../i18n/useT'
 import { BoltIcon, HandIcon, PlayIcon, TrophyIcon } from './icons'
+import { LanguageToggle } from './LanguageToggle'
 import { Logo } from './Logo'
 
 export function MainMenu() {
   const setPhase = useGameStore((s) => s.setPhase)
   const highScore = useGameStore((s) => s.highScore)
+  const t = useT()
 
   return (
     <motion.div
@@ -17,6 +20,8 @@ export function MainMenu() {
     >
       <BackgroundDecor />
 
+      <LanguageToggle className="absolute right-5 top-5" />
+
       <Logo className="mb-7 h-16" />
 
       <motion.section
@@ -27,26 +32,26 @@ export function MainMenu() {
       >
         <span className="pill mb-5 text-ax-secondary">
           <span className="h-1.5 w-1.5 rounded-full bg-ax-electric shadow-[0_0_8px_rgba(75,162,255,0.7)]" />
-          IA en tu navegador
+          {t('menuPill')}
         </span>
 
         <h1 className="font-display text-5xl font-bold leading-[1.05] tracking-tight text-ax-text sm:text-6xl">
-          Reflejos
+          {t('menuTitleA')}
           <br />
           <span className="bg-gradient-to-r from-ax-primary via-ax-secondary to-ax-electric bg-clip-text text-transparent">
-            IA
+            {t('menuTitleB')}
           </span>
         </h1>
 
-        <p className="mt-5 text-base leading-relaxed text-ax-textMuted">
-          Atrapa la tocineta y las salchichas que caen moviendo tus manos frente a la cámara.
-          Detección en tiempo real, sin instalación.
-        </p>
+        <p className="mt-5 text-base leading-relaxed text-ax-textMuted">{t('menuLead')}</p>
 
         <div className="mt-7 grid grid-cols-3 gap-3">
-          <Tip icon={<HandIcon className="h-5 w-5 text-ax-secondary" />} label="Mueve tus manos" />
-          <Tip icon={<BoltIcon className="h-5 w-5 text-ax-electric" />} label="Reflejos rápidos" />
-          <Tip icon={<TrophyIcon className="h-5 w-5 text-ax-primary" />} label={`Récord ${highScore}`} />
+          <Tip icon={<HandIcon className="h-5 w-5 text-ax-secondary" />} label={t('tipMove')} />
+          <Tip icon={<BoltIcon className="h-5 w-5 text-ax-electric" />} label={t('tipFast')} />
+          <Tip
+            icon={<TrophyIcon className="h-5 w-5 text-ax-primary" />}
+            label={`${t('tipRecord')} ${highScore}`}
+          />
         </div>
 
         <button
@@ -54,17 +59,15 @@ export function MainMenu() {
           className="btn-primary mt-8 w-full rounded-2xl py-4 text-[15px]"
         >
           <PlayIcon className="mr-2 h-4 w-4 text-white" />
-          Comenzar a jugar
+          {t('startCta')}
         </button>
 
         <p className="mt-4 text-[11px] uppercase tracking-widest text-ax-textDim">
-          Necesitamos acceso a tu cámara
+          {t('cameraNote')}
         </p>
       </motion.section>
 
-      <p className="mt-6 text-center text-xs text-ax-textDim">
-        Powered by <span className="font-medium text-ax-secondary">Asimetrix</span> · Visión por computadora
-      </p>
+      <p className="mt-6 text-center text-xs text-ax-textDim">{t('poweredBy')}</p>
     </motion.div>
   )
 }

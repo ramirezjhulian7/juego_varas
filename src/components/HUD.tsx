@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { formatRoundTime, useGameStore } from '../store/gameStore'
 import { useRoundTimer } from '../hooks/useRoundTimer'
+import { useT } from '../i18n/useT'
 import { HeartIcon, PauseIcon, SoundOffIcon, SoundOnIcon } from './icons'
 import { Logo } from './Logo'
 
@@ -13,6 +14,7 @@ export function HUD() {
   const toggleSound = useGameStore((s) => s.toggleSound)
   const setPhase = useGameStore((s) => s.setPhase)
   const roundMs = useRoundTimer()
+  const t = useT()
 
   return (
     <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex flex-col gap-2 p-3 sm:p-5">
@@ -28,7 +30,7 @@ export function HUD() {
             <Logo variant="mark" className="h-7 w-7 shrink-0" />
             <div>
               <div className="font-display text-[10px] font-medium uppercase tracking-[0.28em] text-ax-textMuted">
-                Puntos
+                {t('statPoints')}
               </div>
               <motion.div
                 key={score}
@@ -48,10 +50,10 @@ export function HUD() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, delay: 0.05 }}
           className="surface-1 pointer-events-auto rounded-2xl px-4 py-3 text-center sm:px-5"
-          aria-label="Tiempo de la ronda"
+          aria-label={t('hudTimeAria')}
         >
           <div className="font-display text-[10px] font-medium uppercase tracking-[0.28em] text-ax-textMuted">
-            Tiempo
+            {t('statTime')}
           </div>
           <div className="font-display text-3xl font-bold leading-none tabular-nums text-ax-text sm:text-4xl">
             {formatRoundTime(roundMs)}
@@ -62,7 +64,7 @@ export function HUD() {
           <div
             className="surface-1 flex items-center gap-1.5 rounded-2xl px-3 py-2.5"
             role="group"
-            aria-label={`Vidas restantes: ${lives}`}
+            aria-label={`${t('hudLivesAria')}: ${lives}`}
           >
             {Array.from({ length: 3 }).map((_, i) => (
               <motion.span
@@ -82,13 +84,13 @@ export function HUD() {
           <div className="flex items-center gap-2">
             <button
               onClick={toggleSound}
-              aria-label={soundEnabled ? 'Silenciar sonido' : 'Activar sonido'}
+              aria-label={soundEnabled ? t('hudMute') : t('hudUnmute')}
               aria-pressed={soundEnabled}
               className="icon-btn"
             >
               {soundEnabled ? <SoundOnIcon className="h-5 w-5" /> : <SoundOffIcon className="h-5 w-5" />}
             </button>
-            <button onClick={() => setPhase('paused')} aria-label="Pausar juego" className="icon-btn">
+            <button onClick={() => setPhase('paused')} aria-label={t('hudPause')} className="icon-btn">
               <PauseIcon className="h-5 w-5" />
             </button>
           </div>
@@ -96,7 +98,7 @@ export function HUD() {
       </div>
 
       <div className="pointer-events-auto self-start rounded-full bg-ax-surface/85 px-3 py-1 text-[11px] uppercase tracking-widest text-ax-textDim shadow-soft backdrop-blur-md">
-        Nivel {level} · Récord {highScore}
+        {t('hudLevel')} {level} · {t('hudRecord')} {highScore}
       </div>
     </div>
   )

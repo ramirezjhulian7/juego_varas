@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import type { Locale } from '../i18n/strings'
 
 export type GamePhase = 'menu' | 'permission' | 'loading' | 'playing' | 'paused' | 'gameover'
 
@@ -10,6 +11,7 @@ type GameStore = {
   level: number
   highScore: number
   soundEnabled: boolean
+  locale: Locale
   // Stand mode: once the player accepts permission we keep the camera on
   // for the rest of the session, so transitions are instant and gameover
   // can be operated by hand.
@@ -27,6 +29,7 @@ type GameStore = {
   setLevel: (level: number) => void
   resetRun: () => void
   toggleSound: () => void
+  setLocale: (locale: Locale) => void
 }
 
 function computeRoundMs(state: {
@@ -50,6 +53,7 @@ export const useGameStore = create<GameStore>()(
       level: 1,
       highScore: 0,
       soundEnabled: true,
+      locale: 'es',
       cameraStarted: false,
       roundStartedAt: null,
       roundPausedAt: null,
@@ -106,12 +110,14 @@ export const useGameStore = create<GameStore>()(
           lastRoundMs: 0,
         }),
       toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),
+      setLocale: (locale) => set({ locale }),
     }),
     {
       name: 'reflejos-ia-store',
       partialize: (state) => ({
         highScore: state.highScore,
         soundEnabled: state.soundEnabled,
+        locale: state.locale,
       }),
     },
   ),
