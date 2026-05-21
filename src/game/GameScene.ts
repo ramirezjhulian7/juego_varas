@@ -105,33 +105,93 @@ export class GameScene extends Phaser.Scene {
     container.speed = frac * this.scale.height
     container.caught = false
 
-    // Asimetrix brand palette
+    // Pig piggy-bank palette: [body, shadow, snout, earInner, glow]
+    // Each entry is a coherent set so the shading reads as one piece.
     const palette = [
-      [0x040939, 0x4ba2ff], // primary deep blue → electric
-      [0x0e567b, 0x00e3ff], // secondary aqua → electric aqua
-      [0x4ba2ff, 0x7ec6de], // electric → aqua soft
-      [0x00e3ff, 0xffffff], // aqua highlight
+      [0xf4a8b8, 0xd97aa3, 0xe89bb0, 0xfad6df, 0xffc8d4], // rosa clásico
+      [0xffc8d4, 0xf09bb1, 0xeeb5c4, 0xfff0f4, 0xffe1e9], // rosa pálido
+      [0xe87ea0, 0xb85574, 0xd2688d, 0xf4a8c5, 0xfbb6cf], // rosa fuerte
+      [0xfbb6c1, 0xe48aa1, 0xf4a4b3, 0xffd9e2, 0xffd1da], // rosa medio
     ]
-    const [base, glow] = palette[Phaser.Math.Between(0, palette.length - 1)]
+    const [bodyColor, shadowColor, snoutColor, earInner, glow] =
+      palette[Phaser.Math.Between(0, palette.length - 1)]
 
+    // Soft glow behind the piggy
     const halo = this.add.graphics()
-    halo.fillStyle(glow, 0.18)
+    halo.fillStyle(glow, 0.22)
     halo.fillCircle(STICK_WIDTH / 2, STICK_HEIGHT / 2, STICK_HEIGHT * 0.55)
     container.add(halo)
 
+    const cx = STICK_WIDTH / 2
+    const headTop = STICK_HEIGHT - 60 // top of the "head" zone (head is at the bottom because piggy falls head-first)
+
+    // --- Body (vertical capsule, side view of a piggy bank) ---
     const body = this.add.graphics()
-    body.fillStyle(base, 1)
-    body.fillRoundedRect(0, 0, STICK_WIDTH, STICK_HEIGHT, 14)
+    body.fillStyle(bodyColor, 1)
+    body.fillRoundedRect(0, 0, STICK_WIDTH, STICK_HEIGHT, STICK_WIDTH / 2)
 
+    // Right-side shading to give a 3D "side view" feel
+    const shade = this.add.graphics()
+    shade.fillStyle(shadowColor, 0.5)
+    shade.fillRoundedRect(STICK_WIDTH * 0.58, 4, STICK_WIDTH * 0.4, STICK_HEIGHT - 8, STICK_WIDTH / 3)
+
+    // Left-side highlight
     const highlight = this.add.graphics()
-    highlight.fillStyle(0xffffff, 0.22)
-    highlight.fillRoundedRect(4, 6, STICK_WIDTH * 0.35, STICK_HEIGHT - 12, 8)
+    highlight.fillStyle(0xffffff, 0.28)
+    highlight.fillRoundedRect(3, 10, STICK_WIDTH * 0.22, STICK_HEIGHT - 20, 6)
 
-    const cap = this.add.graphics()
-    cap.fillStyle(glow, 1)
-    cap.fillCircle(STICK_WIDTH / 2, 8, STICK_WIDTH / 2 - 2)
+    // --- Curly tail (top of the capsule, opposite end of the head) ---
+    const tail = this.add.graphics()
+    tail.lineStyle(3, shadowColor, 1)
+    tail.beginPath()
+    tail.arc(cx + 5, -2, 4, Math.PI, 0, false)
+    tail.strokePath()
+    tail.beginPath()
+    tail.arc(cx + 5, -9, 3, 0, Math.PI, false)
+    tail.strokePath()
 
-    container.add([body, highlight, cap])
+    // --- Ear (single, side-view) on top of the head ---
+    const ear = this.add.graphics()
+    ear.fillStyle(shadowColor, 1)
+    ear.fillTriangle(
+      STICK_WIDTH * 0.62, headTop - 6, // tip pointing up-back
+      STICK_WIDTH * 0.42, headTop + 8,
+      STICK_WIDTH * 0.86, headTop + 10,
+    )
+    ear.fillStyle(earInner, 1)
+    ear.fillTriangle(
+      STICK_WIDTH * 0.63, headTop - 1,
+      STICK_WIDTH * 0.5, headTop + 8,
+      STICK_WIDTH * 0.78, headTop + 9,
+    )
+
+    // --- Eye (single, side profile) ---
+    const eye = this.add.graphics()
+    eye.fillStyle(0xffffff, 1)
+    eye.fillCircle(STICK_WIDTH * 0.34, STICK_HEIGHT - 32, 2.8)
+    eye.fillStyle(0x2b1a22, 1)
+    eye.fillCircle(STICK_WIDTH * 0.32, STICK_HEIGHT - 32, 1.5)
+    eye.fillStyle(0xffffff, 0.9)
+    eye.fillCircle(STICK_WIDTH * 0.31, STICK_HEIGHT - 33, 0.5)
+
+    // Cheek blush
+    const cheek = this.add.graphics()
+    cheek.fillStyle(shadowColor, 0.45)
+    cheek.fillCircle(STICK_WIDTH * 0.32, STICK_HEIGHT - 22, 2.5)
+
+    // --- Snout (oval at the very bottom, where the piggy is "facing") ---
+    const snout = this.add.graphics()
+    snout.fillStyle(snoutColor, 1)
+    snout.fillEllipse(cx, STICK_HEIGHT - 10, STICK_WIDTH * 0.7, 14)
+    snout.fillStyle(shadowColor, 0.55)
+    snout.lineStyle(1, shadowColor, 0.6)
+    snout.strokeEllipse(cx, STICK_HEIGHT - 10, STICK_WIDTH * 0.7, 14)
+    // Two nostrils
+    snout.fillStyle(0x6a3848, 0.85)
+    snout.fillEllipse(cx - 4, STICK_HEIGHT - 10, 2.2, 3)
+    snout.fillEllipse(cx + 4, STICK_HEIGHT - 10, 2.2, 3)
+
+    container.add([body, shade, highlight, tail, ear, cheek, eye, snout])
     container.setSize(STICK_WIDTH, STICK_HEIGHT)
     container.setData('halo', halo)
 
@@ -218,7 +278,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnBurst(x: number, y: number) {
-    const colors = [0x4ba2ff, 0x00e3ff, 0x7ec6de, 0x040939]
+    const colors = [0xffc8d4, 0xf4a8b8, 0xe87ea0, 0xfff0f4, 0xfbb6c1]
     for (let i = 0; i < 14; i++) {
       const angle = (Math.PI * 2 * i) / 14
       const speed = Phaser.Math.FloatBetween(120, 220)
