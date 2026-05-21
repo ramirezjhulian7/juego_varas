@@ -19,7 +19,12 @@ type Stick = Phaser.GameObjects.Container & {
 
 const STICK_WIDTH = 32
 const STICK_HEIGHT = 200
-const HAND_HIT_RADIUS = 28
+// Generous hit area: at a stand the player is far away and we collapse each
+// hand to a single palm point, so the "hand" needs a fat radius to feel
+// natural. Computed dynamically as a fraction of the screen height in
+// updateSticks() so the feel stays consistent across screen sizes.
+const HAND_HIT_RADIUS_FRAC = 0.06
+const HAND_HIT_RADIUS_MIN = 48
 
 // Tuned for "stand mode": fast and challenging, target ~30–40s rounds.
 // Spawn cadence accelerates and sticks fall faster every LEVEL_INTERVAL_MS.
@@ -204,6 +209,8 @@ export class GameScene extends Phaser.Scene {
     const w = this.scale.width
     const h = this.scale.height
     const remaining: Stick[] = []
+    const hitRadius = Math.max(HAND_HIT_RADIUS_MIN, h * HAND_HIT_RADIUS_FRAC)
+    const hitRadiusSq = hitRadius * hitRadius
 
     for (const stick of this.sticks) {
       if (stick.caught) {
@@ -230,7 +237,7 @@ export class GameScene extends Phaser.Scene {
         const closestX = Phaser.Math.Clamp(px, stick.x, stick.x + STICK_WIDTH)
         const dx = px - closestX
         const dy = py - closestY
-        if (dx * dx + dy * dy <= HAND_HIT_RADIUS * HAND_HIT_RADIUS) {
+        if (dx * dx + dy * dy <= hitRadiusSq) {
           caught = true
           this.spawnBurst(cx, cyTop + STICK_HEIGHT / 2)
           break
@@ -261,9 +268,14 @@ export class GameScene extends Phaser.Scene {
     const points = this.landmarksRef.current
     const w = this.scale.width
     const h = this.scale.height
+    // Match the hit area visually so players see what they can actually catch.
+    const radius = Math.max(HAND_HIT_RADIUS_MIN, h * HAND_HIT_RADIUS_FRAC)
 
     while (this.handMarkers.length < points.length) {
-      const arc = this.add.circle(0, 0, 14, 0x4ba2ff, 0.9).setStrokeStyle(2, 0xffffff, 0.95).setDepth(5)
+      const arc = this.add
+        .circle(0, 0, radius, 0x4ba2ff, 0.22)
+        .setStrokeStyle(3, 0xffffff, 0.95)
+        .setDepth(5)
       this.handMarkers.push(arc)
     }
     while (this.handMarkers.length > points.length) {
@@ -273,6 +285,7 @@ export class GameScene extends Phaser.Scene {
 
     points.forEach((p, i) => {
       const marker = this.handMarkers[i]
+      marker.setRadius(radius)
       marker.setPosition(p.x * w, p.y * h)
     })
   }

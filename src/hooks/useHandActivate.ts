@@ -13,7 +13,7 @@ export function useHandActivate(
   targetRef: React.RefObject<HTMLElement | null>,
   landmarksRef: React.MutableRefObject<HandPoint[]>,
   onActivate: () => void,
-  { active = true, dwellMs = 900 }: Options = {},
+  { active = true, dwellMs = 700 }: Options = {},
 ) {
   const [progress, setProgress] = useState(0)
   const onActivateRef = useRef(onActivate)

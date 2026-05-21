@@ -13,7 +13,11 @@ const MODEL_URL =
   'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task'
 const WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.35/wasm'
 
-const FINGERTIP_INDICES = [4, 8, 12, 16, 20]
+// Stand mode: the player is standing and may be 1–3m from the camera, so
+// per-fingertip tracking is unreliable. We collapse each detected hand into
+// a single "palm" point (average of wrist + four MCP joints), which is the
+// most stable region across distance and motion.
+const PALM_INDICES = [0, 5, 9, 13, 17]
 
 export function useHandTracker(videoRef: React.RefObject<HTMLVideoElement | null>, enabled: boolean): TrackerState {
   const [ready, setReady] = useState(false)
@@ -37,9 +41,11 @@ export function useHandTracker(videoRef: React.RefObject<HTMLVideoElement | null
           },
           runningMode: 'VIDEO',
           numHands: 2,
-          minHandDetectionConfidence: 0.6,
-          minHandPresenceConfidence: 0.6,
-          minTrackingConfidence: 0.6,
+          // Lower thresholds let small/far-away hands keep being detected at
+          // a stand where the player can step back from the camera.
+          minHandDetectionConfidence: 0.4,
+          minHandPresenceConfidence: 0.4,
+          minTrackingConfidence: 0.4,
         })
         if (cancelled) {
           landmarker.close()
@@ -73,10 +79,18 @@ export function useHandTracker(videoRef: React.RefObject<HTMLVideoElement | null
         if (result) {
           const points: HandPoint[] = []
           for (const hand of result.landmarks) {
-            for (const idx of FINGERTIP_INDICES) {
+            let sx = 0
+            let sy = 0
+            let n = 0
+            for (const idx of PALM_INDICES) {
               const lm = hand[idx]
-              if (lm) points.push({ x: lm.x, y: lm.y })
+              if (lm) {
+                sx += lm.x
+                sy += lm.y
+                n++
+              }
             }
+            if (n > 0) points.push({ x: sx / n, y: sy / n })
           }
           landmarksRef.current = points
         }
